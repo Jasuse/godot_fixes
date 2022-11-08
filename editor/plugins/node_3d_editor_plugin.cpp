@@ -6199,12 +6199,15 @@ void vertex() {
 
 void fragment() {
 	ALBEDO = COLOR.rgb;
-	vec3 dir = orthogonal ? -vec3(0, 0, 1) : VIEW;
-	float angle_fade = abs(dot(dir, NORMAL));
+	
+	vec3 world_normal = (INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz;
+
+	vec3 dir = orthogonal ? -vec3(0, 0, 1) : (INV_VIEW_MATRIX * vec4(VIEW,0.0)).xyz;
+	float angle_fade = abs(dot(dir, world_normal));
 	angle_fade = smoothstep(0.05, 0.2, angle_fade);
 
 	vec3 world_pos = (INV_VIEW_MATRIX * vec4(VERTEX, 1.0)).xyz;
-	vec3 world_normal = (INV_VIEW_MATRIX * vec4(NORMAL, 0.0)).xyz;
+
 	vec3 camera_world_pos = INV_VIEW_MATRIX[3].xyz;
 	vec3 camera_world_pos_on_plane = camera_world_pos * (1.0 - world_normal);
 	float dist_fade = 1.0 - (distance(world_pos, camera_world_pos_on_plane) / grid_size);
